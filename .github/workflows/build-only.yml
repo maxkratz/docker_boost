@@ -1,0 +1,56 @@
+name: Build Docker images
+on:
+  push:
+    branches:
+      - '!main'
+      - 'testing/**'
+      - 'feature/**'
+      - 'hotfix/**'
+
+jobs:
+  build-image:
+    runs-on: [ubuntu-22.04]
+    strategy:
+      matrix:
+        version: [1.81.0 1.82.0]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          tags: maxkratz/boost:${{ matrix.version }}
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            boost_version=${{ matrix.version }}
+
+  # latest is an extra build step because of buggy GitHub Actions if conditions
+  build-latest-image:
+    runs-on: [ubuntu-22.04]
+    strategy:
+      matrix:
+        version: [1.83.0]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+      - name: Build latest image
+        uses: docker/build-push-action@v3
+        with:
+          context: .
+          push: false
+          tags: |
+            maxkratz/boost:${{ matrix.version }}
+            maxkratz/boost:latest
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          build-args: |
+            boost_version=${{ matrix.version }}
