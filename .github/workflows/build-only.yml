@@ -12,7 +12,7 @@ jobs:
     runs-on: [ubuntu-22.04]
     strategy:
       matrix:
-        version: [1.81.0 1.82.0]
+        version: [1.81.0, 1.82.0]
     steps:
       - name: Checkout
         uses: actions/checkout@v3
