@@ -1,6 +1,7 @@
 FROM ubuntu:22.04
 LABEL maintainer="Max Kratz <account@maxkratz.com>"
 ENV DEBIAN_FRONTEND=noninteractive
+SHELL ["/bin/bash", "-c"]
 
 # Update and install various packages
 RUN apt-get update -q && \
@@ -10,12 +11,17 @@ RUN apt-get update -q && \
 
 RUN mkdir -p /tmp/boost-build
 WORKDIR /tmp/boost-build
-RUN wget https://boostorg.jfrog.io/artifactory/main/release/1.81.0/source/boost_1_81_0.tar.gz
-RUN tar xvf boost_1_81_0.tar.gz
-WORKDIR /tmp/boost-build/boost_1_81_0
-RUN ./bootstrap.sh --prefix=/usr/
-RUN ./b2 install
 
+# e.g., boost_version = 1.81.0
+ARG boost_version
+ENV boost_version="$boost_version"
+
+RUN wget https://boostorg.jfrog.io/artifactory/main/release/${boost_version}/source/boost_${boost_version//./_}.tar.gz
+RUN tar xvf boost_${boost_version//./_}.tar.gz
+RUN cd /tmp/boost-build/boost_${boost_version//./_} && ./bootstrap.sh --prefix=/usr/
+RUN cd /tmp/boost-build/boost_${boost_version//./_} &&./b2 install
+
+# Remove src folder of the build (for storage efficiency)
 RUN rm -rf /tmp/boost-build
 # Remove apt lists (for storage efficiency)
 RUN rm -rf /var/lib/apt/lists/*
