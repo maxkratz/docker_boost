@@ -16,7 +16,7 @@ WORKDIR /tmp/boost-build
 ARG boost_version
 ENV boost_version="$boost_version"
 
-RUN wget https://boostorg.jfrog.io/artifactory/main/release/${boost_version}/source/boost_${boost_version//./_}.tar.gz
+RUN wget https://archives.boost.io/release/${boost_version}/source/boost_${boost_version//./_}.tar.gz
 RUN tar xvf boost_${boost_version//./_}.tar.gz
 RUN cd /tmp/boost-build/boost_${boost_version//./_} && ./bootstrap.sh --prefix=/usr/
 RUN cd /tmp/boost-build/boost_${boost_version//./_} &&./b2 install
